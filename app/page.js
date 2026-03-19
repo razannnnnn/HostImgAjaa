@@ -5,7 +5,6 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DonationModal from "@/components/DonationModal";
-import Aurora from "@/components/Aurora";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);

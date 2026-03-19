@@ -12,6 +12,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: null,
+  },
+  verificationExpiry: {
+    type: Date,
+    default: null,
+  },
   uploadCount: {
     type: Number,
     default: 0,

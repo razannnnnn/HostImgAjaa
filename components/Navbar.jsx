@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import AuthModal from "@/components/AuthModal";
 import { useSession, signOut } from "next-auth/react";
 
@@ -9,6 +10,14 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login");
   const { data: session } = useSession();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownOpen) setDropdownOpen(false);
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [dropdownOpen]);
 
   return (
     <>
@@ -46,10 +55,6 @@ export default function Navbar() {
                     {/* Dropdown */}
                     {dropdownOpen && (
                       <>
-                        <div
-                          className="fixed inset-0 z-10"
-                          onClick={() => setDropdownOpen(false)}
-                        />
                         <div className="card variant-outlined absolute right-0 top-11 z-20 w-56 shadow-lg">
                           {/* Signed in as */}
                           <div className="mb-1 border-b border-gray-200 pb-3 dark:border-gray-800">

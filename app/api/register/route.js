@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(request) {
   try {
@@ -23,7 +25,6 @@ export async function POST(request) {
       );
     }
 
-    // Cek email sudah terdaftar
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
@@ -32,18 +33,26 @@ export async function POST(request) {
       );
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Simpan user
+    // Generate verification token
+    const verificationToken = uuidv4();
+    const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 jam
+
     await User.create({
       email,
       password: hashedPassword,
+      verificationToken,
+      verificationExpiry,
+      isVerified: false,
     });
+
+    // Kirim email verifikasi
+    await sendVerificationEmail(email, verificationToken);
 
     return NextResponse.json({
       success: true,
-      message: "Akun berhasil dibuat",
+      message: "Akun berhasil dibuat! Cek email kamu untuk verifikasi.",
     });
   } catch (error) {
     console.error("Register error:", error);
