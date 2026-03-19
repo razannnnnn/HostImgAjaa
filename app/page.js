@@ -21,7 +21,7 @@ export default function Home() {
                 {/* Annonce Badge */}
                 <a
                   href="/"
-                  className="annonce variant-outlined sz-sm group mx-auto w-fit gap-2"
+                  className="annonce variant-outlined sz-sm group mx-auto w-fit gap-2 border-white/20 bg-white/10 backdrop-blur-3xl dark:bg-white/5"
                 >
                   <span className="text-title ml-4 line-clamp-1 text-nowrap text-sm">
                     Hosting Image Free With HostImgAjaa
