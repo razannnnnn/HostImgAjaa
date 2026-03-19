@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/favicon.png" width="80" height="80" alt="HostImgAjaa Logo" />
+![HostImgAjaa](https://socialify.git.ci/razannnnnn/HostImgAjaa/image?custom_language=Next.js&font=Raleway&forks=1&issues=1&language=1&name=1&owner=1&pattern=Charlie+Brown&pulls=1&stargazers=1&theme=Auto)
 
 # HostImgAjaa
 
