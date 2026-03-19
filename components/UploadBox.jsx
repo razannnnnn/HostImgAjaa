@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useCallback, useState } from "react";
+import { useToast } from "@/components/ToastProvider";
 
 // ===== ELECTRIC BORDER =====
 const ElectricBorder = ({
@@ -310,6 +311,8 @@ const ElectricBorder = ({
 
 // ===== RESULT MODAL =====
 const ResultModal = ({ isOpen, onClose, result }) => {
+  const { showToast } = useToast();
+
   const [visible, setVisible] = useState(false);
   const [animate, setAnimate] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -405,7 +408,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
           <a
             href={result?.url}
             target="_blank"
-            className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 hover:border-primary-500/30 hover:bg-primary-500/10 dark:bg-gray-800"
+            className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 dark:bg-gray-800"
           >
             <svg
               className="h-4 w-4 text-primary-400"
@@ -425,7 +428,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
             onClick={() =>
               navigator.clipboard.writeText(`![image](${result?.url})`)
             }
-            className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 hover:border-primary-500/30 hover:bg-primary-500/10 dark:bg-gray-800"
+            className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 dark:bg-gray-800"
           >
             <svg
               className="h-4 w-4 text-primary-400"
@@ -448,7 +451,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
                 `<img src="${result?.url}" alt="image" />`,
               )
             }
-            className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 hover:border-primary-500/30 hover:bg-primary-500/10 dark:bg-gray-800"
+            className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 dark:bg-gray-800"
           >
             <svg
               className="h-4 w-4 text-primary-400"
@@ -500,6 +503,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
 
 // ===== UPLOAD BOX =====
 export default function UploadBox() {
+  const { showToast } = useToast();
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
@@ -521,13 +525,17 @@ export default function UploadBox() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setError(data.error || "Terjadi kesalahan saat upload");
+        if (data.limitReached) {
+          showToast("Limit Harian Anda Sudah Tercapai", "error");
+        } else {
+          showToast(data.error || "Terjadi kesalahan saat upload", "error");
+        }
         return;
       }
       setResult(data);
       setModalOpen(true);
     } catch {
-      setError("Terjadi kesalahan koneksi");
+      showToast("Terjadi kesalahan koneksi", "error"); // ← ganti ini
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -546,14 +554,18 @@ export default function UploadBox() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setError(data.error || "Terjadi kesalahan saat upload");
+        if (data.limitReached) {
+          showToast("Limit Harian Anda Sudah Tercapai", "error");
+        } else {
+          showToast(data.error || "Terjadi kesalahan saat upload", "error");
+        }
         return;
       }
       setResult(data);
       setModalOpen(true);
       setUrlInput("");
     } catch {
-      setError("Terjadi kesalahan koneksi");
+      showToast("Terjadi kesalahan koneksi", "error"); // ← ganti ini
     } finally {
       setUploading(false);
     }
@@ -573,7 +585,7 @@ export default function UploadBox() {
 
   return (
     <>
-      <div className="mx-auto mt-6 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
+      <div className="mx-auto mb-8 mt-6 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
         {/* Header Label */}
         <div className="mb-2 flex items-center justify-between"></div>
 
@@ -594,9 +606,7 @@ export default function UploadBox() {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={`cursor-pointer rounded-2xl p-8 text-center transition-all duration-200 sm:p-10 ${
-              dragOver
-                ? "bg-primary-500/10"
-                : "hover:bg-gray-50 dark:hover:bg-gray-900"
+              dragOver ? "bg-primary-500/10" : " dark:bg-gray-900"
             } ${uploading ? "cursor-not-allowed opacity-70" : ""}`}
           >
             {/* Cloud Icon */}
@@ -705,15 +715,8 @@ export default function UploadBox() {
               </button>
             </div>
 
-            {/* Error */}
-            {error && (
-              <div className="mt-4 rounded-xl border border-danger-500/20 bg-danger-500/10 p-3">
-                <p className="text-xs text-danger-400">{error}</p>
-              </div>
-            )}
-
             {/* Info Badges */}
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-6">
               <span className="flex items-center gap-1 text-xs font-medium text-blue-500">
                 <svg
                   className="h-3 w-3"
@@ -726,20 +729,6 @@ export default function UploadBox() {
                   <path d="M2 6l3 3 5-5" />
                 </svg>
                 Gratis selamanya
-              </span>
-              <span className="flex items-center gap-1 text-xs font-medium text-blue-500">
-                <svg
-                  className="h-3 w-3"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                >
-                  <rect x="2" y="5" width="8" height="6" rx="1" />
-                  <path d="M4 5V3.5a2 2 0 114 0V5" />
-                </svg>
-                Tidak perlu akun
               </span>
               <span className="flex items-center gap-1 text-xs font-medium text-blue-500">
                 <svg

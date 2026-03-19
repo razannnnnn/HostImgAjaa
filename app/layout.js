@@ -1,5 +1,6 @@
 import "./globals.css";
 import Aurora from "@/components/Aurora";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "HostImgAjaa | Made By Razan",
@@ -20,8 +21,9 @@ export default function RootLayout({ children }) {
             speed={1}
           />
         </div>
-
-        <div className="flex flex-1 flex-col">{children}</div>
+        <Providers>
+          <div className="flex flex-1 flex-col">{children}</div>
+        </Providers>
       </body>
     </html>
   );
