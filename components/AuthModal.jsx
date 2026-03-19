@@ -90,8 +90,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }) {
       if (!res.ok) {
         setError(data.error);
       } else {
-        showToast("Akun berhasil dibuat! Silakan login.");
-        setTimeout(() => setTab("login"), 1500);
+        setSuccess("Akun berhasil dibuat! Cek email kamu untuk verifikasi.");
+        showToast("Link verifikasi telah dikirim ke email kamu!", "success");
+        setTimeout(() => setTab("login"), 2000);
       }
     } catch {
       setError("Terjadi kesalahan koneksi");

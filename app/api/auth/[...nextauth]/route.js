@@ -19,6 +19,12 @@ export const authOptions = {
         await connectDB();
         const user = await User.findOne({ email: credentials.email });
         if (!user) throw new Error("Email tidak terdaftar");
+
+        // ← tambah cek ini
+        if (!user.isVerified) {
+          throw new Error("Email belum diverifikasi. Cek inbox kamu.");
+        }
+
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password,
