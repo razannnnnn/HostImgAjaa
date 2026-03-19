@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailus/themer": "^0.1.8",
+    "@vercel/analytics": "^2.0.1",
     "autoprefixer": "^10.4.27",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",

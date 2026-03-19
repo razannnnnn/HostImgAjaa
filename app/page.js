@@ -5,12 +5,14 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DonationModal from "@/components/DonationModal";
+import { Analytics } from "@vercel/analytics/next";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <>
+      <Analytics />
       <Navbar />
       <main className="flex-1 overflow-hidden pt-24 lg:pt-28">
         <section className="relative">
