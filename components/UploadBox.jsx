@@ -333,11 +333,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleCopyDeleteCode = () => {
-    navigator.clipboard.writeText(result?.deleteCode || "");
-    setCopiedDelete(true);
-    setTimeout(() => setCopiedDelete(false), 2000);
-  };
+  const deleteUrl = `${window.location.origin}/delete/${result?.deleteCode}`;
 
   return (
     <div
@@ -426,9 +422,9 @@ const ResultModal = ({ isOpen, onClose, result }) => {
           </a>
 
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(`![image](${result?.url})`);
-            }}
+            onClick={() =>
+              navigator.clipboard.writeText(`![image](${result?.url})`)
+            }
             className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 hover:border-primary-500/30 hover:bg-primary-500/10 dark:bg-gray-800"
           >
             <svg
@@ -447,11 +443,11 @@ const ResultModal = ({ isOpen, onClose, result }) => {
           </button>
 
           <button
-            onClick={() => {
+            onClick={() =>
               navigator.clipboard.writeText(
                 `<img src="${result?.url}" alt="image" />`,
-              );
-            }}
+              )
+            }
             className="flex flex-col items-center gap-1.5 rounded-xl border border-transparent bg-gray-100 p-3 transition-all duration-200 hover:border-primary-500/30 hover:bg-primary-500/10 dark:bg-gray-800"
           >
             <svg
@@ -468,6 +464,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
             <span className="text-body text-xs font-medium">HTML</span>
           </button>
         </div>
+
         {/* Delete URL */}
         <div className="card variant-soft rounded-xl p-3">
           <p className="text-body mb-1 text-xs font-medium uppercase tracking-widest">
@@ -478,13 +475,11 @@ const ResultModal = ({ isOpen, onClose, result }) => {
           </p>
           <div className="flex items-center gap-2 rounded-lg bg-gray-200 px-3 py-2 dark:bg-gray-700">
             <span className="flex-1 truncate font-mono text-xs text-danger-400">
-              {`${window.location.origin}/api/delete/${result?.deleteCode}`}
+              {deleteUrl}
             </span>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/api/delete/${result?.deleteCode}`,
-                );
+                navigator.clipboard.writeText(deleteUrl);
                 setCopiedDelete(true);
                 setTimeout(() => setCopiedDelete(false), 2000);
               }}
@@ -511,29 +506,24 @@ export default function UploadBox() {
   const [result, setResult] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
 
   const handleUpload = async (file) => {
     if (!file) return;
-
     setError(null);
     setUploading(true);
-
     try {
       const formData = new FormData();
       formData.append("file", file);
-
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         setError(data.error || "Terjadi kesalahan saat upload");
         return;
       }
-
       setResult(data);
       setModalOpen(true);
     } catch {
@@ -541,6 +531,31 @@ export default function UploadBox() {
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleUrlUpload = async () => {
+    if (!urlInput.trim()) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: urlInput.trim() }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || "Terjadi kesalahan saat upload");
+        return;
+      }
+      setResult(data);
+      setModalOpen(true);
+      setUrlInput("");
+    } catch {
+      setError("Terjadi kesalahan koneksi");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -560,7 +575,14 @@ export default function UploadBox() {
     <>
       <div className="mx-auto mt-6 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
         {/* Header Label */}
-        <div className="mb-2 flex items-center justify-between"> </div>
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-xs font-medium uppercase tracking-widest text-gray-500 dark:text-gray-400">
+            Upload Gambar
+          </span>
+          <span className="font-mono text-xs text-gray-400 dark:text-gray-600">
+            maks 10 MB / file
+          </span>
+        </div>
 
         {/* Electric Border */}
         <ElectricBorder
@@ -673,11 +695,20 @@ export default function UploadBox() {
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <input
                 type="text"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleUrlUpload()}
                 placeholder="https://contoh.com/gambar.png"
                 className="input variant-mixed sz-sm flex-1 font-mono text-xs"
+                disabled={uploading}
               />
-              <button type="button" className="btn variant-ghost sz-sm">
-                Upload URL
+              <button
+                type="button"
+                onClick={handleUrlUpload}
+                disabled={uploading || !urlInput.trim()}
+                className="btn variant-ghost sz-sm"
+              >
+                {uploading ? "..." : "Upload URL"}
               </button>
             </div>
 

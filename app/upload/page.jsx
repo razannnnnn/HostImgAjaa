@@ -1,12 +1,10 @@
 // app/upload/page.jsx
+
+"use client";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import UploadBox from "@/components/UploadBox";
-
-export const metadata = {
-  title: "Upload Gambar | HostImgAjaa",
-  description: "Upload gambar kamu secara gratis dan dapatkan link permanen.",
-};
 
 export default function UploadPage() {
   return (

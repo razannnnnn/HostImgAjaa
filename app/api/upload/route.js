@@ -9,46 +9,88 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    const formData = await request.formData();
-    const file = formData.get("file");
+    const contentType = request.headers.get("content-type") || "";
+    let buffer;
+    let filename;
+    let mimeType;
 
-    if (!file) {
-      return NextResponse.json(
-        { error: "Tidak ada file yang diupload" },
-        { status: 400 },
-      );
+    if (contentType.includes("application/json")) {
+      // Upload dari URL
+      const { url } = await request.json();
+
+      if (!url) {
+        return NextResponse.json({ error: "URL tidak valid" }, { status: 400 });
+      }
+
+      const imageResponse = await fetch(url);
+
+      if (!imageResponse.ok) {
+        return NextResponse.json(
+          { error: "Gagal mengambil gambar dari URL" },
+          { status: 400 },
+        );
+      }
+
+      mimeType = imageResponse.headers.get("content-type") || "image/jpeg";
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(mimeType)) {
+        return NextResponse.json(
+          { error: "URL bukan gambar yang valid" },
+          { status: 400 },
+        );
+      }
+
+      const arrayBuffer = await imageResponse.arrayBuffer();
+      buffer = Buffer.from(arrayBuffer);
+
+      const ext = mimeType.split("/")[1].replace("jpeg", "jpg");
+      filename = `${uuidv4()}.${ext}`;
+    } else {
+      // Upload dari file
+      const formData = await request.formData();
+      const file = formData.get("file");
+
+      if (!file) {
+        return NextResponse.json(
+          { error: "Tidak ada file yang diupload" },
+          { status: 400 },
+        );
+      }
+
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        return NextResponse.json(
+          { error: "Tipe file tidak didukung" },
+          { status: 400 },
+        );
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        return NextResponse.json(
+          { error: "Ukuran file maksimal 10MB" },
+          { status: 400 },
+        );
+      }
+
+      const bytes = await file.arrayBuffer();
+      buffer = Buffer.from(bytes);
+      const ext = file.name.split(".").pop();
+      filename = `${uuidv4()}.${ext}`;
+      mimeType = file.type;
     }
-
-    // Validasi tipe file
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "image/svg+xml",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Tipe file tidak didukung" },
-        { status: 400 },
-      );
-    }
-
-    // Validasi ukuran file (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "Ukuran file maksimal 10MB" },
-        { status: 400 },
-      );
-    }
-
-    // Convert file ke buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Generate nama file unik
-    const ext = file.name.split(".").pop();
-    const filename = `${uuidv4()}.${ext}`;
 
     // Upload ke Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
@@ -78,7 +120,6 @@ export async function POST(request) {
       uploadedAt: new Date(),
     });
 
-    // Return URL pakai domain sendiri
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const imageUrl = `${baseUrl}/api/i/${filename}`;
 
