@@ -333,7 +333,7 @@ const ResultModal = ({ isOpen, onClose, result }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const deleteUrl = `${window.location.origin}/delete/${result?.deleteCode}`;
+  const deleteUrl = `${window.location.origin}/api/delete/${result?.deleteCode}`;
 
   return (
     <div
@@ -575,14 +575,7 @@ export default function UploadBox() {
     <>
       <div className="mx-auto mt-6 w-full max-w-xl sm:max-w-2xl lg:max-w-3xl">
         {/* Header Label */}
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-medium uppercase tracking-widest text-gray-500 dark:text-gray-400">
-            Upload Gambar
-          </span>
-          <span className="font-mono text-xs text-gray-400 dark:text-gray-600">
-            maks 10 MB / file
-          </span>
-        </div>
+        <div className="mb-2 flex items-center justify-between"></div>
 
         {/* Electric Border */}
         <ElectricBorder
