@@ -2,8 +2,6 @@
 
 ![HostImgAjaa](https://socialify.git.ci/razannnnnn/HostImgAjaa/image?custom_language=Next.js&font=Raleway&forks=1&issues=1&language=1&name=1&owner=1&pattern=Charlie+Brown&pulls=1&stargazers=1&theme=Auto)
 
-# HostImgAjaa
-
 **Free Image Hosting — Upload, Store, and Share in seconds.**
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
