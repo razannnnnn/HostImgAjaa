@@ -819,7 +819,7 @@ const UsersTab = ({ session }) => {
 
         <div className="overflow-hidden rounded-xl border border-gray-800/50 bg-gray-950/60 backdrop-blur-md">
           {/* Table Header */}
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3 border-b border-gray-800 px-4 py-3">
+          <div className="grid grid-cols-[3fr_1.5fr_1fr_1fr_80px] gap-3 border-b border-gray-800 px-4 py-3">
             {["Email", "Nama", "Role", "Status", "Aksi"].map((h) => (
               <p
                 key={h}
@@ -856,7 +856,7 @@ const UsersTab = ({ session }) => {
               {users.map((user) => (
                 <div
                   key={user._id}
-                  className={`grid grid-cols-[2fr_1fr_1fr_1fr_auto] items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-800/20 ${editingUser === user._id ? "cursor-default" : "cursor-pointer"}`}
+                  className={`grid grid-cols-[3fr_1.5fr_1fr_1fr_80px] items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-800/20 ${editingUser === user._id ? "cursor-default" : "cursor-pointer"}`}
                   onClick={() => {
                     if (editingUser === user._id) return; // ← tidak trigger modal saat mode edit
                     setSelectedUser(user);
