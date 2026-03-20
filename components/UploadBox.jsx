@@ -385,6 +385,19 @@ const ResultModal = ({ isOpen, onClose, result }) => {
           </button>
         </div>
 
+        {/* Preview Gambar */}
+        <div className="mb-4 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+          <img
+            src={result?.cloudinaryUrl?.replace(
+              "/upload/",
+              "/upload/w_600,q_60,f_auto/",
+            )}
+            alt="Preview"
+            className="max-h-48 w-full object-contain"
+            onError={(e) => (e.target.style.display = "none")}
+          />
+        </div>
+
         {/* URL Gambar */}
         <div className="mb-4">
           <p className="text-body mb-2 text-xs font-medium uppercase tracking-widest">

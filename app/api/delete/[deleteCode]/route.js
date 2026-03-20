@@ -6,35 +6,36 @@ import Image from "@/models/Image";
 export async function GET(request, { params }) {
   try {
     await connectDB();
-
     const { deleteCode } = await params;
-
-    // Cari gambar di MongoDB
     const image = await Image.findOne({ deleteCode });
 
     if (!image) {
-      return NextResponse.json(
-        { error: "Gambar tidak ditemukan atau kode salah" },
-        { status: 404 },
+      // Cek apakah request dari fetch (JSON) atau browser langsung
+      const isJson = request.headers
+        .get("accept")
+        ?.includes("application/json");
+      if (isJson)
+        return NextResponse.json(
+          { error: "Gambar tidak ditemukan" },
+          { status: 404 },
+        );
+      return NextResponse.redirect(
+        new URL("/deleteFailed", process.env.NEXTAUTH_URL),
       );
     }
 
-    // Hapus dari Cloudinary
     await cloudinary.uploader.destroy(image.publicId);
-
-    // Hapus dari MongoDB
     await Image.deleteOne({ deleteCode });
 
-    return NextResponse.json({
-      success: true,
-      message: "Gambar berhasil dihapus",
-      filename: image.filename,
-    });
-  } catch (error) {
-    console.error("Delete error:", error);
-    return NextResponse.json(
-      { error: "Terjadi kesalahan server" },
-      { status: 500 },
+    const isJson = request.headers.get("accept")?.includes("application/json");
+    if (isJson) return NextResponse.json({ success: true });
+    return NextResponse.redirect(
+      new URL(
+        `/deleteSuccess?filename=${image.filename}`,
+        process.env.NEXTAUTH_URL,
+      ),
     );
+  } catch (error) {
+    return NextResponse.json({ error: "Terjadi kesalahan" }, { status: 500 });
   }
 }

@@ -30,10 +30,24 @@ export const authOptions = {
           user.password,
         );
         if (!isValid) throw new Error("Password salah");
-        return { id: user._id.toString(), email: user.email };
+        return { id: user._id.toString(), email: user.email, role: user.role };
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.id;
+      session.user.role = token.role;
+      return session;
+    },
+  },
   session: { strategy: "jwt" },
   pages: { signIn: "/" },
   secret: process.env.NEXTAUTH_SECRET,

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AuthModal from "@/components/AuthModal";
 import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
+  const router = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authTab, setAuthTab] = useState("login");
@@ -69,7 +71,10 @@ export default function Navbar() {
                           {/* Menu */}
                           <div className="space-y-0.5 py-1">
                             <button
-                              onClick={() => setDropdownOpen(false)}
+                              onClick={() => {
+                                setDropdownOpen(false);
+                                router.push("/account");
+                              }}
                               className="text-body flex w-full items-center rounded-lg px-1 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                             >
                               Account settings

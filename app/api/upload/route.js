@@ -129,6 +129,7 @@ export async function POST(request) {
       publicId: uploadResult.public_id,
       deleteCode,
       uploadedAt: new Date(),
+      userId: session?.user?.id || null, // ← tambah ini
     });
 
     // Update counter guest setelah upload berhasil
@@ -152,9 +153,11 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       url: imageUrl,
+      cloudinaryUrl: uploadResult.secure_url, // ← tambah ini
       filename,
       deleteCode,
       uploadedAt: new Date(),
+      userId: session?.user?.id || null, // ← tambah ini
     });
   } catch (error) {
     console.error("Upload error:", error);

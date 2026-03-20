@@ -998,3 +998,21 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ===== CUSTOM SCROLLBAR ===== */
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #5c5fd640;
+  border-radius: 999px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #5c5fd6;
+}
