@@ -619,7 +619,9 @@ export default function UploadBox() {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={`cursor-pointer rounded-2xl p-8 text-center transition-all duration-200 sm:p-10 ${
-              dragOver ? "bg-primary-500/10" : " dark:bg-gray-900"
+              dragOver
+                ? "border border-white/20 bg-gray-50 backdrop-blur-3xl"
+                : " border border-white/10 backdrop-blur-2xl dark:bg-gray-900/50"
             } ${uploading ? "cursor-not-allowed opacity-70" : ""}`}
           >
             {/* Cloud Icon */}

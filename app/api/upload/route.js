@@ -6,6 +6,7 @@ import connectDB from "@/lib/mongodb";
 import cloudinary from "@/lib/cloudinary";
 import Image from "@/models/Image";
 import GuestUpload from "@/models/GuestUpload";
+import User from "@/models/User";
 
 const GUEST_DAILY_LIMIT = 10;
 
@@ -131,6 +132,13 @@ export async function POST(request) {
       uploadedAt: new Date(),
       userId: session?.user?.id || null, // ← tambah ini
     });
+
+    if (session?.user?.email) {
+      await User.findOneAndUpdate(
+        { email: session.user.email },
+        { $inc: { uploadCount: 1 } },
+      );
+    }
 
     // Update counter guest setelah upload berhasil
     if (!session) {
